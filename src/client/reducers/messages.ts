@@ -1,6 +1,6 @@
 import * as constants from '../constants'
 import { MessageAddAction, MessageSendAction } from '../actions/ChatActions'
-import { NotificationAddAction } from '../actions/NotifyActions'
+// import { NotificationAddAction } from '../actions/NotifyActions'
 
 export interface Message {
   userId: string
@@ -22,14 +22,14 @@ const defaultState: MessagesState = {
   count: 0,
 }
 
-function convertNotificationToMessage(action: NotificationAddAction): Message {
-  return {
-    userId: '[PeerCalls]',
-    message: action.payload.message,
-    system: true,
-    timestamp: new Date().toLocaleString(),
-  }
-}
+// function convertNotificationToMessage(action: NotificationAddAction): Message {
+//   return {
+//     userId: '[PeerCalls]',
+//     message: action.payload.message,
+//     system: true,
+//     timestamp: new Date().toLocaleString(),
+//   }
+// }
 
 const imageRegexp = /^data:image\/(png|jpg|jpeg|gif);base64/
 
@@ -71,14 +71,14 @@ function handleMessage(
 
 export default function messages (
   state = defaultState,
-    action: MessageAddAction | MessageSendAction | NotificationAddAction,
+    action: MessageAddAction | MessageSendAction, // | NotificationAddAction
 ): MessagesState {
   switch (action.type) {
-    case constants.NOTIFY:
-      return {
-        ...state,
-        list: [...state.list, convertNotificationToMessage(action)],
-      }
+    // case constants.NOTIFY:
+    //   return {
+    //     ...state,
+    //     list: [...state.list, convertNotificationToMessage(action)],
+    //   }
     case constants.MESSAGE_ADD:
       return handleMessage(state, action)
     default:

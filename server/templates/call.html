@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Peer Call</title>
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+  <title>Conferenza</title>
   {{template "header" .}}
 </head>
 <body class="call">
   <input type="hidden" id="config" value="{{.Data}}">
   <div id="container"></div>
-  <noscript>JavaScript must be enabled for this application</noscript>
+  <noscript>Devi abilitare JavaScript per poter utilizzare questa applicazione.</noscript>
   <script src="{{.BaseURL}}/static/index.js?{{.Version}}"></script>
+  <script>
+    $("body").on("domChanged", function () {
+      console.log('dom changed');
+    });
+  </script>
 </body>
 </html>

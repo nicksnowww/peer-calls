@@ -2,12 +2,17 @@ import React from 'react'
 import { StreamWithURL, StreamsState, LocalStream } from '../reducers/streams'
 import forEach from 'lodash/forEach'
 import map from 'lodash/map'
+// Custom code
+import isEqual from 'lodash/isEqual'
+
 import { ME } from '../constants'
 import { getNickname } from '../nickname'
 import Video from './Video'
 import { Nicknames } from '../reducers/nicknames'
 import { getStreamKey, WindowStates, WindowState } from '../reducers/windowStates'
-import { MinimizeTogglePayload, StreamTypeCamera } from '../actions/StreamActions'
+import { MinimizeTogglePayload, StreamTypeCamera, StreamTypeDesktop, StreamType } from '../actions/StreamActions'
+
+var screensharing = 0
 
 export interface VideosProps {
   nicknames: Nicknames
@@ -42,8 +47,13 @@ export default class Videos extends React.PureComponent<VideosProps> {
   private getStreams() {
     const { windowStates, nicknames, streams } = this.props
 
-    const minimized: StreamProps[] = []
-    const maximized: StreamProps[] = []
+    console.log("These streams:\n\n" + JSON.stringify(streams))
+    // const minimized: StreamProps[] = []
+    // const maximized: StreamProps[] = []
+    var minimized = []
+    var maximized = []
+    // Custom code
+    var newStreams = []
 
     function addStreamProps(props: StreamProps) {
       if (props.windowState === 'minimized') {
@@ -71,7 +81,8 @@ export default class Videos extends React.PureComponent<VideosProps> {
           localUser,
           windowState: windowStates[key],
         }
-        addStreamProps(props)
+
+        // addStreamProps(props)
         return
       }
 
@@ -87,7 +98,9 @@ export default class Videos extends React.PureComponent<VideosProps> {
           localUser,
           windowState: windowStates[key],
         }
-        addStreamProps(props)
+
+        newStreams.push(props)
+        // addStreamProps(props)
       })
     }
 
@@ -100,6 +113,106 @@ export default class Videos extends React.PureComponent<VideosProps> {
         addStreamsByUser(false, userId, s && s.streams || [])
       }
     })
+
+    var storeStreams = []
+    // var indexToSkip = 999
+    var indexToSkip = []
+
+    if (screensharing === 0 || screensharing === 2) {
+      newStreams.forEach((stream) => {
+        var i = 0
+
+        while(newStreams[i] !== undefined) {
+          if (newStreams[i].userId === stream.userId &&
+              newStreams[i].key !== stream.key &&
+              /* indexToSkip !== i */
+              !indexToSkip.includes(i)) {
+
+            // indexToSkip = newStreams.indexOf(stream)
+            indexToSkip.push(newStreams.indexOf(stream))
+            // console.log("\n\nI'm in while:\n\n" + i)
+
+            screensharing === 0 ?
+              screensharing = 1 :
+              screensharing = 2
+
+            if (stream.localUser) {
+              // console.log("stored stream:\n\n" + JSON.stringify(stream))
+              storeStreams.push(stream)
+            }
+            else {
+              // console.log("stored stream:\n\n" + JSON.stringify(newStreams[i]))
+              storeStreams.push(newStreams[i])
+            }
+          }
+          i++
+        }
+      })
+    }
+
+
+    // console.log("storeStreams:\n\n" + JSON.stringify(storeStreams))
+
+    // Screensharing status 1: first time activated
+    if (screensharing === 1) {
+      // Change status to active
+      screensharing = 2
+      let difference = newStreams.filter(x => !storeStreams.includes(x));
+
+      difference.forEach((props) => {
+        props.windowState = 'minimized'
+        addStreamProps(props)
+      })
+      storeStreams.forEach((props) => {
+        props.windowState = undefined
+        addStreamProps(props)
+      })
+
+      return { minimized, maximized }
+    }
+    // Screensharing status 2: active
+    else if (screensharing === 2) {
+      // Screensharing is no longer active
+      if (storeStreams.length < 1) {
+        screensharing = 0
+
+        newStreams.forEach((props) => {
+          props.windowState = undefined
+          addStreamProps(props)
+        })
+      }
+      // Still active
+      else {
+        let difference = newStreams.filter(x => !storeStreams.includes(x));
+
+        difference.forEach((props) => {
+          console.log()
+          if (!props.windowState) {
+            props.windowState = 'minimized'
+          }
+          else {
+            props.windowState = undefined
+          }
+
+          addStreamProps(props)
+        })
+        storeStreams.forEach((props) => {
+          addStreamProps(props)
+        })
+      }
+
+      // minimized.forEach((props) => {
+      //   console.log("Minimized props:\n\n\n" + JSON.stringify(props))
+      // })
+
+      return { minimized, maximized }
+    }
+    // Screensharing status 0: not active
+    else if (screensharing === 0) {
+      newStreams.forEach((props) => {
+        addStreamProps(props)
+      })
+    }
 
     return { minimized, maximized }
   }

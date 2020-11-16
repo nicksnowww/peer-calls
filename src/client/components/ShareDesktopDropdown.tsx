@@ -78,7 +78,7 @@ React.PureComponent<ShareDesktopDropdownProps, ShareDesktopDropdownState> {
     if (!shareConfig) {
       return
     }
-
+    
     this.props.onGetDesktopStream(shareConfig)
     .then(payload => {
       const tracks = payload.stream.getTracks()

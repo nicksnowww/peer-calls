@@ -4,7 +4,7 @@ import React from 'react'
 import Peer from 'simple-peer'
 import { hangUp } from '../actions/CallActions'
 import { getDesktopStream } from '../actions/MediaActions'
-import { dismissNotification, Notification } from '../actions/NotifyActions'
+// import { dismissNotification, Notification } from '../actions/NotifyActions'
 import { MinimizeTogglePayload, removeLocalStream, StreamTypeDesktop } from '../actions/StreamActions'
 import * as constants from '../constants'
 import { Message } from '../reducers/messages'
@@ -13,7 +13,7 @@ import { StreamsState } from '../reducers/streams'
 import { WindowStates } from '../reducers/windowStates'
 import Chat from './Chat'
 import { Media } from './Media'
-import Notifications from './Notifications'
+// import Notifications from './Notifications'
 import Toolbar from './Toolbar'
 import Videos from './Videos'
 
@@ -22,7 +22,7 @@ export interface AppProps {
   dismissNotification: typeof dismissNotification
   init: () => void
   nicknames: Nicknames
-  notifications: Record<string, Notification>
+  // notifications: Record<string, Notification>
   messages: Message[]
   messagesCount: number
   peers: Record<string, Peer.Instance>
@@ -73,8 +73,8 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   }
   render () {
     const {
-      dismissNotification,
-      notifications,
+      // dismissNotification,
+      // notifications,
       nicknames,
       messages,
       messagesCount,
@@ -101,11 +101,11 @@ export default class App extends React.PureComponent<AppProps, AppState> {
           onGetDesktopStream={this.props.getDesktopStream}
           onRemoveLocalStream={this.props.removeLocalStream}
         />
-        <Notifications
+        {/* <Notifications
           className={chatVisibleClassName}
           dismiss={dismissNotification}
           notifications={notifications}
-        />
+        /> */}
         <Chat
           messages={messages}
           nicknames={nicknames}

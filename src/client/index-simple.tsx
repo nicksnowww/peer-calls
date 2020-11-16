@@ -53,6 +53,10 @@ socket.on('connect', () => {
         el.controls = true
         $container.appendChild(el)
 
+        stream.onended = () => {
+          console.log("Recording ended")
+        }
+        
         stream.getTracks().forEach(track => {
           console.log(
             'local track', track.id, track.label,

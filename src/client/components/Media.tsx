@@ -168,7 +168,7 @@ extends React.PureComponent<MediaProps, MediaComponentState> {
         </div>
 
         <button type='submit' disabled={!props.joinEnabled}>
-          Join Call
+          Unisciti
         </button>
 
         {this.state.error && (
@@ -183,7 +183,7 @@ extends React.PureComponent<MediaProps, MediaComponentState> {
 
         <Unsupported />
 
-        <div className='network-info'>
+        <div className='network-info' style={{display: 'none'}}>
           <span>Network: {network}</span>
         </div>
       </form>
